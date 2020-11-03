@@ -1,4 +1,6 @@
 insertion_sort/.idea
 insertion_sort/cmake-build-debug
 insertion_sort/CMakeLists.txt
-
+heap_sort/.idea
+heap_sort/cmake-build-debug
+heap_sort/CMakeLists.txt
