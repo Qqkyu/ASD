@@ -1,169 +1,172 @@
 #include "AVL.hpp"
+#include <algorithm>
+#include <iostream>
 
-Node* inorderSucc(Node* node) {
-    Node* cur{ node };
-    while(cur && cur->left) {
-        cur = cur->left;
-    }
-    return cur;
-}
-
-int height(const Node* root) {
+int AVL::height(const node* cur) const {
     int h{ 0 };
-    if(root) {
-        int l_height{ height(root->left) };
-        int r_height{ height(root->right) };
-        int max_height = std::max(l_height, r_height);
+    if(cur) {
+        int l_height{ height(cur->left) };
+        int r_height{ height(cur->right) };
+        int max_height(std::max(l_height, r_height));
         h = max_height + 1;
     }
     return h;
 }
 
-int difference(const Node* root) {
-    int l_height = height(root->left);
-    int r_height = height(root->right);
-    return (l_height - r_height);
+int AVL::difference(const node* cur) const {
+    int l_height{ height(cur->left) };
+    int r_height{ height(cur->right) };
+    int b_factor{ l_height - r_height };
+    return b_factor;
 }
 
-Node* rr_rot(Node* parent) {
-    Node* t{ parent->right };
-    parent->right = t->left;
-    t->left = parent;
-    return t;
+AVL::node* AVL::rightRotation(node* parent) {
+    if(!parent->left) {
+        return parent;
+    }
+    node* u{ parent->left };
+    parent->left = u->right;
+    u->right = parent;
+    return u;
 }
 
-Node* ll_rot(Node* parent) {
-    Node* t{ parent->left };
-    parent->left = t->right;
-    t->right = parent;
-    return t;
+AVL::node* AVL::leftRotation(node* parent) {
+    if(!parent->right) {
+        return parent;
+    }
+    node* u{ parent->right };
+    parent->right = u->left;
+    u->left = parent;
+    return u;
 }
 
-Node* lr_rot(Node* parent) {
-    Node* t{ parent->left };
-    parent->left = rr_rot(t);
-    return ll_rot(parent);
+AVL::node* AVL::leftRightRotation(node* parent) {
+    parent->left = leftRotation(parent->left);
+    return rightRotation(parent);
 }
 
-Node* rl_rot(Node* parent) {
-    Node* t{ parent->right };
-    parent->right = ll_rot(t);
-    return rr_rot(parent);
+AVL::node* AVL::rightLeftRotation(node* parent) {
+    parent->right = rightRotation(parent->right);
+    return leftRotation(parent);
 }
 
-Node* balance(Node* root) {
-    int b_factor{ difference(root) };
-    if(b_factor > 1) {
-        if(difference(root->left) > 0) {
-            root = ll_rot(root);
+AVL::node* AVL::insert(node* cur, int x) {
+    if(!cur) {
+        cur = new node{ x, nullptr, nullptr };
+        return cur;
+    }
+    else if(x < cur->data) {
+        cur->left = insert(cur->left, x);
+        if(height(cur->left) - height(cur->right) == 2) {
+            if(x < cur->left->data) {
+                cur = rightRotation(cur);
+            }
+            else {
+                cur = leftRightRotation(cur);
+            }
         }
-        else {
-            root = lr_rot(root);
+    }
+    else if(x > cur->data) {
+        cur->right = insert(cur->right, x);
+        if(height(cur->right) - height(cur->left) == 2) {
+            if(x > cur->right->data) {
+                cur = leftRotation(cur);
+            }
+            else {
+                cur = rightLeftRotation(cur);
+            }
         }
     }
-    else if(b_factor < -1) {
-        if(difference(root->right) > 0) {
-            root = rl_rot(root);
-        }
-        else {
-            root = rr_rot(root);
-        }
-    }
-    return root;
+    return cur;
 }
 
-Node* insert(Node* root, int v) {
-    if(root == nullptr) {
-        root = new Node{ v };
-        root->left = root->right = nullptr;
-        return root;
-    }
-    else if(v < root->data) {
-        root->left = insert(root->left, v);
-        root = balance(root);
-    }
-    else if(v >= root->data) {
-        root->right = insert(root->right, v);
-        root = balance(root);
-    }
-    return root;
-}
+AVL::node* AVL::remove(node* cur, int x) {
+    if(!cur)
+        return nullptr;
 
-Node* remove(Node* root, int value) {
-    if(root == nullptr) {
-        return root;
+    if(cur->data > x) {
+        cur->left = remove(cur->left, x);
+    }
+    else if(cur->data < x) {
+        cur->right = remove(cur->right, x);
     }
 
-    if(value < root->data) {
-        root->left = remove(root->left, value);
-    }
-    else if(value > root->data) {
-        root->right = remove(root->right, value);
+    if(cur->left && cur->right) {
+        node* tmp{ min(cur->right) };
+        cur->data = tmp->data;
+        cur->right = remove(cur->right, cur->data);
     }
     else {
-        if(root->left == nullptr) {
-            Node* temp{ root->right };
-            delete root;
-            return temp;
+        node* tmp{ cur };
+        if(!cur->left) {
+            cur = cur->right;
         }
-        else if(root->right == nullptr) {
-            Node* temp{ root->left };
-            delete root;
-            return temp;
+        else if(!cur->right) {
+            cur = cur->left;
         }
-        Node* temp{ inorderSucc(root->right) };
-        root->data = temp->data;
-        root->right = remove(root->right, temp->data);
+        delete tmp;
     }
-    return root;
+    if(!cur) {
+        return cur;
+    }
+
+    if (cur->right && (height(cur->left) - height(cur->right) == 2)) {
+        if (height(cur->right->right) - height(cur->right->left) == 1) {
+            return leftRotation(cur);
+        } else {
+            return rightLeftRotation(cur);
+        }
+    }
+    else if (cur->left && (height(cur->right) - height(cur->left) == 2)) {
+        if (height(cur->left->left) - height(cur->left->right) == 1) {
+            return rightRotation(cur);
+        } else {
+            return leftRightRotation(cur);
+        }
+    }
+    return cur;
 }
 
-bool contains(const Node* root, int value) {
-    if(value == root->data) {
-        return true;
+void AVL::printPreorder(const node* cur) const {
+    std::cout << cur->data << " ";
+    if(cur->left) {
+        printPreorder(cur->left);
     }
-    else if(value < root->data) {
-        if(root->left) {
-            return contains(root->left, value);
-        }
-        else {
-            return false;
-        }
-    }
-    else {
-        if(root->right) {
-            return contains(root->right, value);
-        }
-        return false;
-    }
-}
-
-void printPreOrder(const Node* root, std::ostream& os) {
-    os << root->data << " ";
-    if(root->left) {
-        printPreOrder(root->left, os);
-    }
-    if(root->right) {
-        printPreOrder(root->right, os);
+    if(cur->right) {
+        printPreorder(cur->right);
     }
 }
 
-void printInOrder(const Node* root, std::ostream& os) {
-    if(root->left) {
-        printInOrder(root->left, os);
+void AVL::printInorder(const node* cur) const {
+    if(cur->left) {
+        printInorder(cur->left);
     }
-    os << root->data << " ";
-    if(root->right) {
-        printInOrder(root->right, os);
+    std::cout << cur->data << " ";
+    if(cur->right) {
+        printInorder(cur->right);
     }
 }
 
-void printPostOrder(const Node* root, std::ostream& os) {
-    if(root->left) {
-        printPostOrder(root->left, os);
+void AVL::printPostorder(const node* cur) const {
+    if(cur->left) {
+        printPostorder(cur->left);
     }
-    if(root->right) {
-        printPostOrder(root->right, os);
+    if(cur->right) {
+        printPostorder(cur->right);
     }
-    os << root->data << " ";
+    std::cout << cur->data << " ";
+}
+
+AVL::node* AVL::min(node* cur) const {
+    if(!cur)
+        return nullptr;
+
+    return (cur->left) ? min(cur->left) : cur;
+}
+
+AVL::node* AVL::max(node* cur) const {
+    if(!cur)
+        return nullptr;
+
+    return (cur->right) ? max(cur->right) : cur;
 }
