@@ -1,47 +1,40 @@
 #pragma once
 #include <iostream>
 
-struct Node {
-    int data;
-    Node* left;
-    Node* right;
-
-    explicit Node(int x) : data{ x }, left{ nullptr }, right{ nullptr } { }
-};
-
-Node* insert(Node*, int);
-Node* remove(Node*, int);
-bool contains(const Node*, int);
-void printPreOrder(const Node*, std::ostream&);
-void printInOrder(const Node*, std::ostream&);
-void printPostOrder(const Node*, std::ostream&);
-
-//Auxiliary:
-Node* inorderSucc(Node*);
-
 class BST {
 public:
-    explicit BST(int data) : root{ new Node(data) } { }
+    BST() = default;
 
-    void insert(int x) {
-        root = ::insert(root, x);
-    }
-    void remove(int x) {
-        root = ::remove(root, x);
-    }
-    bool contains(int x) {
-        return ::contains(root, x);
-    }
-    void printPreOrder(std::ostream& os) {
-        ::printPreOrder(root, os);
-    }
-    void printInOrder(std::ostream& os) {
-        ::printInOrder(root, os);
-    }
-    void printPostOrder(std::ostream& os) {
-        ::printPostOrder(root, os);
-    }
+    void insert(int x) { root = insert(root, x); }
+    void remove(int x) { root = remove(root, x); }
+
+    bool contains(int x) { return contains(root, x); }
+
+    void printPreorder() { if(root) printPreorder(root); }
+    void printInorder() { if(root) printInorder(root); }
+    void printPostorder() { if(root) printPostorder(root); }
 
 private:
-    Node* root;
+
+    struct node {
+        int data;
+        node* left;
+        node* right;
+
+        explicit node(int x) : data{ x }, left{ nullptr }, right{ nullptr } { }
+    };
+
+    node* root{ };
+
+    node* insert(node*, int);
+    node* remove(node*, int);
+
+    bool contains(const node*, int);
+
+    void printPreorder(const node*);
+    void printInorder(const node*);
+    void printPostorder(const node*);
+
+//Auxiliary:
+    node* inorderSucc(node*);
 };

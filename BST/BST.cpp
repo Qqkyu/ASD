@@ -1,26 +1,27 @@
 #include "BST.hpp"
+#include <iostream>
 
-Node* insert(Node* root, int value) {
-    if(root == nullptr) {
-        return new Node(value);
+BST::node* BST::insert(node* cur, int value) {
+    if(cur == nullptr) {
+        return new node(value);
     }
-    if(value < root->data)
-        root->left = insert(root->left, value);
+    if(value < cur->data)
+        cur->left = insert(cur->left, value);
     else
-        root->right = insert(root->right, value);
+        cur->right = insert(cur->right, value);
 
-    return root;
+    return cur;
 }
 
-Node* inorderSucc(Node* node) {
-    Node* cur{ node };
+BST::node* BST::inorderSucc(node* node) {
+    BST::node* cur{ node };
     while(cur && cur->left) {
         cur = cur->left;
     }
     return cur;
 }
 
-Node* remove(Node* root, int value) {
+BST::node* BST::remove(node* root, int value) {
     if(root == nullptr) {
         return root;
     }
@@ -33,68 +34,68 @@ Node* remove(Node* root, int value) {
     }
     else {
         if(root->left == nullptr) {
-            Node* temp{ root->right };
+            node* temp{ root->right };
             delete root;
             return temp;
         }
         else if(root->right == nullptr) {
-            Node* temp{ root->left };
+            node* temp{ root->left };
             delete root;
             return temp;
         }
-        Node* temp{ inorderSucc(root->right) };
+        node* temp{ inorderSucc(root->right) };
         root->data = temp->data;
         root->right = remove(root->right, temp->data);
     }
     return root;
 }
 
-bool contains(const Node* root, int value) {
-    if(value == root->data) {
+bool BST::contains(const BST::node* cur, int value) {
+    if(value == cur->data) {
         return true;
     }
-    else if(value < root->data) {
-        if(root->left) {
-            return contains(root->left, value);
+    else if(value < cur->data) {
+        if(cur->left) {
+            return contains(cur->left, value);
         }
         else {
             return false;
         }
     }
     else {
-        if(root->right) {
-            return contains(root->right, value);
+        if(cur->right) {
+            return contains(cur->right, value);
         }
         return false;
     }
 }
 
-void printPreOrder(const Node* root, std::ostream& os) {
-    os << root->data << " ";
-    if(root->left) {
-        printPreOrder(root->left, os);
+void BST::printPreorder(const node* cur) {
+    std::cout << cur->data << " ";
+    if(cur->left) {
+        printPreorder(cur->left);
     }
-    if(root->right) {
-        printPreOrder(root->right, os);
-    }
-}
-
-void printInOrder(const Node* root, std::ostream& os) {
-    if(root->left) {
-        printInOrder(root->left, os);
-    }
-    os << root->data << " ";
-    if(root->right) {
-        printInOrder(root->right, os);
+    if(cur->right) {
+        printPreorder(cur->right);
     }
 }
 
-void printPostOrder(const Node* root, std::ostream& os) {
+void BST::printInorder(const node* cur) {
+    if(cur->left) {
+        printInorder(cur->left);
+    }
+    std::cout << cur->data << " ";
+    if(cur->right) {
+        printInorder(cur->right);
+    }
+}
+
+void BST::printPostorder(const node* root) {
     if(root->left) {
-        printPostOrder(root->left, os);
+        printPostorder(root->left);
     }
     if(root->right) {
-        printPostOrder(root->right, os);
+        printPostorder(root->right);
     }
-    os << root->data << " ";
+    std::cout << root->data << " ";
 }
