@@ -7,8 +7,9 @@ heap_sort/CMakeLists.txt
 BST/.idea
 BST/cmake-build-debug
 BST/CMakeLists.txt
-BST/main.cpp
 AVL/.idea
 AVL/cmake-build-debug
 AVL/CMakeLists.txt
-AVL/main.cpp
+red-black tree/.idea
+red-black tree/cmake-build-debug
+red-black tree/CMakeLists.txt
