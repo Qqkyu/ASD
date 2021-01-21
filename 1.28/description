@@ -1,0 +1,5 @@
+Podaj strukturę danych, umożliwiającą wykonywanie w czasie O(1) następujących operacji na początkowo pustym ziorze S.
+(a) select(S):    wybranie dowolnego elementu zbioru S i usunięcie go z S;
+(b) search(i, S): sprawdzenie, czy element i należy do S;
+(c) insert(i, S): S := S ∪ {i}
+przy założeniu, że S ⊂ {1, 2, ..., n}.

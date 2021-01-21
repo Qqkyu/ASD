@@ -13,3 +13,6 @@ AVL/CMakeLists.txt
 red-black tree/.idea
 red-black tree/cmake-build-debug
 red-black tree/CMakeLists.txt
+1.28/.idea
+1.28/cmake-build-debug
+1.28/CMakeLists.txt
