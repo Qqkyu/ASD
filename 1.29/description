@@ -1,0 +1,6 @@
+Podaj strukturę danych, umożliwiającą wykonywanie w czasie O(1) następujących operacji na początkowo pustym ciągu q:
+(a) push(1, q):   wstawianie elementu i na początek listy q;
+(b) pop(q):       usunięcie elementu początkowego listy q;
+(c) search(i, q): sprawdzenie, czy element i znajduje się na liście q;
+(d) delete(i, q): usunięcie elementu i z listy q
+przy założeniu, że q ⊂ {1, 2, ..., n}.
